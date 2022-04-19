@@ -1,7 +1,9 @@
 package collections
 
 type Collection[T Object[any]] interface {
-	Add(index int, o T) bool
+
+	// Add: Ensures that this collection contains the specified element (optional operation).
+	Add(o T) bool
 
 	AddAll(c Collection[T]) bool
 
@@ -13,7 +15,7 @@ type Collection[T Object[any]] interface {
 
 	IsEmpty() bool
 
-	Iterator() *Iterator[T]
+	Iterator() Iterator[T]
 
 	Remove(o T) bool
 

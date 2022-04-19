@@ -1,4 +1,7 @@
 package collections
 
-type Iterator[T Collection[Object[any]]] interface {
+type Iterator[T Object[any]] interface {
+	HasNext() bool
+
+	Next() *T
 }

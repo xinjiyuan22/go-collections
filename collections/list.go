@@ -5,7 +5,7 @@ type List[T Object[any]] interface {
 
 	Get(index int) *T
 
-	Append(o ...T)
+	Insert(index int, o T)
 
 	Set(index int, o T)
 

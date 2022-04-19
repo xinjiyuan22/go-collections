@@ -6,6 +6,23 @@ import (
 	"github.com/xinjiyuan22/collections/collections"
 )
 
+type ArrayIterator[T collections.Object[any]] struct {
+	array        *ArrayList[T]
+	currentIndex int
+}
+
+func (it *ArrayIterator[T]) HasNext() bool {
+	return it.currentIndex < it.array.Size()-1
+}
+
+func (it *ArrayIterator[T]) Next() *T {
+	if !it.HasNext() {
+		return nil
+	}
+	it.currentIndex++
+	return it.array.Get(it.currentIndex)
+}
+
 type ArrayList[T collections.Object[any]] struct {
 	sync.RWMutex
 	content []*T
@@ -20,14 +37,20 @@ func NewArrayList[T collections.Object[any]](cap int) collections.List[T] {
 	}
 }
 
-func (a *ArrayList[T]) Add(index int, o T) bool {
+func (a *ArrayList[T]) Add(o T) bool {
 	a.Lock()
 	defer a.Unlock()
-
+	a.content = append(a.content, &o)
 	return true
 }
 
 func (a *ArrayList[T]) AddAll(c collections.Collection[T]) bool {
+	a.Lock()
+	defer a.Unlock()
+	it := c.Iterator()
+	for it.HasNext() {
+		a.content = append(a.content, it.Next())
+	}
 	return true
 }
 
@@ -48,7 +71,15 @@ func (a *ArrayList[T]) Contains(o T) bool {
 	return false
 }
 
-func (a *ArrayList[T]) ContainsAll(c collections.Collection[T]) bool
+func (a *ArrayList[T]) ContainsAll(c collections.Collection[T]) bool {
+	it := c.Iterator()
+	for it.HasNext() {
+		if !a.Contains(*it.Next()) {
+			return true
+		}
+	}
+	return false
+}
 
 func (a *ArrayList[T]) IsEmpty() bool {
 	a.RLock()
@@ -56,11 +87,35 @@ func (a *ArrayList[T]) IsEmpty() bool {
 	return len(a.content) == 0
 }
 
-func (a *ArrayList[T]) Iterator() *collections.Iterator[T]
+func (a *ArrayList[T]) Iterator() collections.Iterator[T] {
+	return &ArrayIterator[T]{
+		array:        a,
+		currentIndex: -1,
+	}
+}
 
-func (a *ArrayList[T]) Remove(o T) bool
+func (a *ArrayList[T]) Remove(o T) bool {
+	a.Lock()
+	defer a.Unlock()
+	var i, j int
+	for i, j = 0, 0; i < len(a.content); i++ {
+		if (*a.content[i]).Equal(o) {
+			continue
+		}
+		a.content[j] = a.content[i]
+		j++
+	}
+	a.content = a.content[:j]
+	return true
+}
 
-func (a *ArrayList[T]) RemoveAll(c collections.Collection[T]) bool
+func (a *ArrayList[T]) RemoveAll(c collections.Collection[T]) bool {
+	it := c.Iterator()
+	for it.HasNext() {
+		a.Remove(*it.Next())
+	}
+	return true
+}
 
 func (a *ArrayList[T]) ToArray() []T {
 	a.RLock()
@@ -87,14 +142,39 @@ func (a *ArrayList[T]) Get(index int) *T {
 	return a.content[index]
 }
 
-func (a *ArrayList[T]) Append(o ...T) {
-
+func (a *ArrayList[T]) Insert(index int, o T) {
+	a.Lock()
+	defer a.Unlock()
+	size := len(a.content)
+	if index > len(a.content) || index < 0 {
+		return
+	}
+	a.content = append(a.content, &o)
+	tmp := a.content[size]
+	for i := size; i > index; i-- {
+		a.content[i] = a.content[i-1]
+	}
+	a.content[index] = tmp
 }
 
 func (a *ArrayList[T]) Set(index int, o T) {
+	if index >= a.Size() {
+		return
+	}
+	a.Lock()
+	defer a.Unlock()
+	a.content[index] = &o
 
 }
 
 func (a *ArrayList[T]) SubList(from, to int) collections.List[T] {
-	return nil
+	if from > to || to < a.Size() {
+		return nil
+	}
+
+	res := NewArrayList[T](to - from)
+	for i := from; i < to; i++ {
+		res.Add(*a.Get(i))
+	}
+	return res
 }
