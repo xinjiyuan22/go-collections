@@ -1,7 +1,7 @@
 package collections
 
-type HashObject[T any] interface {
-	Object[T]
+type HashObject interface {
+	Object
 
 	Hash() string
 }

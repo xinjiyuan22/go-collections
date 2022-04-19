@@ -6,18 +6,18 @@ import (
 	"github.com/xinjiyuan22/collections/collections"
 )
 
-type linkedNode[T collections.Object[any]] struct {
+type linkedNode[T collections.Object] struct {
 	prev, next *linkedNode[T]
 	value      *T
 }
 
-type LinkedList[T collections.Object[any]] struct {
+type LinkedList[T collections.Object] struct {
 	sync.RWMutex
 	head    *linkedNode[T]
 	initCap int
 }
 
-func NewLinkedList[T collections.Object[any]](cap int) collections.List[T] {
+func NewLinkedList[T collections.Object](cap int) collections.List[T] {
 	return &LinkedList[T]{
 		RWMutex: sync.RWMutex{},
 		initCap: cap,
@@ -43,7 +43,9 @@ func (a *LinkedList[T]) Contains(o T) bool {
 	return true
 }
 
-func (a *LinkedList[T]) ContainsAll(c collections.Collection[T]) bool
+func (a *LinkedList[T]) ContainsAll(c collections.Collection[T]) bool {
+	return true
+}
 
 func (a *LinkedList[T]) IsEmpty() bool {
 	a.RLock()
@@ -51,11 +53,17 @@ func (a *LinkedList[T]) IsEmpty() bool {
 	return true
 }
 
-func (a *LinkedList[T]) Iterator() collections.Iterator[T]
+func (a *LinkedList[T]) Iterator() collections.Iterator[T] {
+	return nil
+}
 
-func (a *LinkedList[T]) Remove(o T) bool
+func (a *LinkedList[T]) Remove(o T) bool {
+	return true
+}
 
-func (a *LinkedList[T]) RemoveAll(c collections.Collection[T]) bool
+func (a *LinkedList[T]) RemoveAll(c collections.Collection[T]) bool {
+	return true
+}
 
 func (a *LinkedList[T]) ToArray() []T {
 	a.RLock()
