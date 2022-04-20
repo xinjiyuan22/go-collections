@@ -1,5 +1,7 @@
 package collections
 
 type Hashable interface {
-	Hash() string
+	Object
+
+	HashCode() int64
 }
