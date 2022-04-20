@@ -1,6 +1,6 @@
 package collections
 
-type Collection[T Object[any]] interface {
+type Collection[T Object] interface {
 
 	// Add: Ensures that this collection contains the specified element (optional operation).
 	Add(o T) bool

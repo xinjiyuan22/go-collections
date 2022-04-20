@@ -6,7 +6,7 @@ import (
 	"github.com/xinjiyuan22/collections/collections"
 )
 
-type ArrayIterator[T collections.Object[any]] struct {
+type ArrayIterator[T collections.Object] struct {
 	array        *ArrayList[T]
 	currentIndex int
 }
@@ -23,17 +23,25 @@ func (it *ArrayIterator[T]) Next() *T {
 	return it.array.Get(it.currentIndex)
 }
 
-type ArrayList[T collections.Object[any]] struct {
+type ArrayList[T collections.Object] struct {
 	sync.RWMutex
 	content []*T
 	initCap int
 }
 
-func NewArrayList[T collections.Object[any]](cap int) collections.List[T] {
+func NewArrayList[T collections.Object](cap int) collections.List[T] {
 	return &ArrayList[T]{
 		RWMutex: sync.RWMutex{},
 		content: make([]*T, 0, cap),
 		initCap: cap,
+	}
+}
+
+func NewArrayListFromSlice[T collections.Object](s []*T) collections.List[T] {
+	return &ArrayList[T]{
+		RWMutex: sync.RWMutex{},
+		content: s,
+		initCap: len(s),
 	}
 }
 
@@ -75,10 +83,10 @@ func (a *ArrayList[T]) ContainsAll(c collections.Collection[T]) bool {
 	it := c.Iterator()
 	for it.HasNext() {
 		if !a.Contains(*it.Next()) {
-			return true
+			return false
 		}
 	}
-	return false
+	return true
 }
 
 func (a *ArrayList[T]) IsEmpty() bool {
@@ -105,16 +113,22 @@ func (a *ArrayList[T]) Remove(o T) bool {
 		a.content[j] = a.content[i]
 		j++
 	}
+
+	if j == i {
+		return false
+	}
 	a.content = a.content[:j]
 	return true
 }
 
 func (a *ArrayList[T]) RemoveAll(c collections.Collection[T]) bool {
-	it := c.Iterator()
-	for it.HasNext() {
-		a.Remove(*it.Next())
+	iter := c.Iterator()
+	var res bool
+	for iter.HasNext() {
+		c := a.Remove(*iter.Next())
+		res = res || c
 	}
-	return true
+	return res
 }
 
 func (a *ArrayList[T]) ToArray() []T {
@@ -136,7 +150,7 @@ func (a *ArrayList[T]) Size() int {
 func (a *ArrayList[T]) Get(index int) *T {
 	a.RLock()
 	defer a.RUnlock()
-	if len(a.content) >= index {
+	if len(a.content) <= index {
 		return nil
 	}
 	return a.content[index]

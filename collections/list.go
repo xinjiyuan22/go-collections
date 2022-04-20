@@ -1,6 +1,6 @@
 package collections
 
-type List[T Object[any]] interface {
+type List[T Object] interface {
 	Collection[T]
 
 	Get(index int) *T

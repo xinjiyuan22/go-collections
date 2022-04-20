@@ -1,4 +1,4 @@
 package collections
 
-type Map[key HashObject[any], value Object[any]] interface {
+type Map[key Hashable, value Object] interface {
 }
