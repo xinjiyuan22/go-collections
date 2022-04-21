@@ -20,8 +20,10 @@ type Map[KEY Hashable, VALUE Object] interface {
 	Put(key KEY, value VALUE) VALUE
 
 	// Get: Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
-	Get(key KEY) VALUE
+	Get(key KEY) *VALUE
 
 	// IsEmpty: Returns true if this map contains no key-value mappings.
 	IsEmpty() bool
+
+	ToMap() map[KEY]VALUE
 }
