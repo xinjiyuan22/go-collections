@@ -76,7 +76,3 @@ func (m *PlainMap[K, V]) Get(key K) *V {
 func (m *PlainMap[key, value]) IsEmpty() bool {
 	return len(m.plain) == 0
 }
-
-func (m *PlainMap[K, V]) ToMap() map[K]V {
-	return m.plain
-}

@@ -1,6 +1,6 @@
 package collections
 
-type Map[KEY Hashable, VALUE Object] interface {
+type Map[KEY Object, VALUE Object] interface {
 	// Clear: Removes all of the mappings from this map (optional operation).
 	Clear()
 
@@ -24,6 +24,4 @@ type Map[KEY Hashable, VALUE Object] interface {
 
 	// IsEmpty: Returns true if this map contains no key-value mappings.
 	IsEmpty() bool
-
-	ToMap() map[KEY]VALUE
 }
